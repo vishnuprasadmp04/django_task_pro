@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block base %}
+<h1 class="text-center bg-gray-900 text-white">My Courses</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 bg-black">
+    {% for order in courses %}
+    {% for i in order.course_object.all %}
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+        <img src="{{ i.picture.url }}" alt="Headless UI" class="w-full h-64 object-fit">
+        <div class="p-4 md:p-6">
+            <h3 class="text-xl font-semibold text-indigo-500 dark:text-indigo-300 mb-2">{{i.title}}</h3>
+            {% for j in i.category_object.all %}
+            <span class="font-bold">{{j}} |</span>
+            {% endfor %}
+
+            <p class="text-gray-700 dark:text-gray-300 mb-4 two-lines">
+                {{i.description|truncatechars:35}}
+            </p>
+            <p>
+                <span class="font-bold">PURCHACED DATE :</span>{{order.created_at|date}}
+            </p>
+            <div class="py-3">
+                <a href="{% url 'Lesson' i.id %}" class="bg-green-500 text-white font-semibold px-3 py-1 border border-black rounded">
+                    <i class="fa-solid fa-play"></i>
+                    Start Learning....
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+
+
+    <!-- Add more items as needed, following the same structure -->
+
+</div>
+
+
+
+{% endblock base %}

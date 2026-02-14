@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block base %}
+
+<div style="min-height: 75vh;">
+    <!-- Hero Section-->
+    <section class="w-full min-h-50 bg-violet-300 p-2" id="Hero">
+        <div class="w-full grid grid-cols-2">
+            <div>
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/010/869/731/small/online-education-concept-illustration-digital-classroom-online-teaching-metaphors-free-png.png"
+                    alt="img" class="w-full">
+            </div>
+            <div class="flex flex-col justify-center">
+                <h1 class="text-5xl text-shadow-sm text-shadow-black">Course Cloud</h1>
+                <p class="text-justify text-white p-2 mt-2">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo eligendi ullam ratione vitae nihil
+                    quis, cupiditate porro corporis explicabo distinctio qui iusto inventore omnis recusandae libero
+                    doloribus perspiciatis voluptate id!quis, cupiditate porro corporis explicabo distinctio qui iusto
+                    inventore omnis recusandae libero, doloribus perspiciatis voluptate id!
+                </p>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Course -->
+
+    <section class="w-full p-2">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-semibold text-center text-gray-800 dark:text-gray-200 mb-8">
+                    Popular Course 
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for i in course %}
+                    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+                        <img src="{{ i.picture.url }}"
+                            alt="Headless UI" class="w-full h-64 object-fit">
+                        <div class="p-4 md:p-6">
+                            <h3 class="text-xl font-semibold text-indigo-500 dark:text-indigo-300 mb-2">{{i.title}}</h3>
+                            {% for j in i.category_object.all %}
+                            <span class="font-bold">{{j}} |</span>
+                            {% endfor %}
+
+                            <p class="text-gray-700 dark:text-gray-300 mb-4 two-lines">
+                                {{i.description}}
+                            </p>
+                            {% if i.is_free %}
+                            <p class="font-semibold text-green-700">Free</p>
+                            {% else %}
+                            <p class="font-semibold">Rs.{{i.price}}</p>
+                            {% endif %}
+                            {% if i.id not in purchased_courses %}
+                            <a href="{% url 'course' i.id %}"
+                                class="inline-block bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-full">Learn
+                                More</a>
+
+                            {% else %}
+                            <span class="mt-3 text-green-600">
+                                PURCHACED
+                            </span>
+                             {% endif %}
+                        </div>
+                    </div>
+                      {% endfor %}
+                   
+
+                    <!-- Add more items as needed, following the same structure -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+
+
+
+{% endblock base %}
