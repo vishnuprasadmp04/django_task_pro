@@ -8,11 +8,13 @@ from django.contrib import messages
 from instructor.models import *
 from student.models import *
 import razorpay
+from decouple import config
 # Create your views here.
 
 
-RAZR_KEY_ID="rzp_test_SFy9f2Wfo8Y5Jj"
-RAZR_SECRET_KEY="1mp2v9PT9unb14VrE2DPWscI"
+RAZR_KEY_ID=config('RAZR_KEY_ID')
+
+RAZR_SECRET_KEY=config('RAZR_SECRET_KEY')
 
 class StudentCreationView(CreateView):
     template_name="student_Registration.html"
@@ -135,7 +137,7 @@ class PaymentVerifyView(View):
         print(request.POST)   # check Razorpay response
         client = razorpay.Client(auth=(RAZR_KEY_ID, RAZR_SECRET_KEY))
         try:
-            client.utility.verify_payment_signature(request.POST):
+            client.utility.verify_payment_signature(request.POST)
             razr_pay_order_id = request.POST.get('razorpay_order_id')
             order_instance=Order.objects.get(razr_pay_order_id=razr_pay_order_id)
             order_instance.is_paid=True
@@ -170,3 +172,14 @@ class ViewLessonView(View):
         #    lesson_object=Lesson.objects.get(id=lesson_id,module_object=course)
  
        return render(request,"viewlesson.html",{"course":course,"lesson":lesson})
+def cardCount(request):
+    if request.user.is_authenticated:
+        count=Cart.objects.filter(user_object=request.user).count()
+        return {"cartcount":count}
+    return {"cartcount":0}
+
+def courseCount(request):
+    if request.user.is_authenticated:
+        ordercount=Cart.objects.filter(student=request.user,is_paid=True).count()
+        return {"coursecount":ordercount}
+    return {"coursecount":0}

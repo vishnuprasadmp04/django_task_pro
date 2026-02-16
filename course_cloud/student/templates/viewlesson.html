@@ -1,48 +1,44 @@
 {% extends 'base.html' %}
 {% block base %}
-
-<h1 class="text-xl text-cyan-700 m-2 font-bold text-shadow-lg">{{course.title}}</h1>
-<div class="w-full min-h-screen grid sm:grid-cols-1 md:grid-cols-[3fr_1fr]">
-    <div>
-        <iframe width="100%" height="100%" src="{{lesson.vedio}}" title="YouTube video player" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<h2 class=" mb-4 text-center my-2 py-3" style="letter-spacing: -1px;font-size: 30px;font-family: 'sk-modernist',sans-serif;color: rgb(06,79,205);font-weight: 500;font-weight: 600;">{{course.title}}</h2>
+<div class="w-full min-h-screen grid sm:grid-cols-1 md:grid-cols-[5fr_2fr]" >
+    <div class="ml-12">
+        <iframe width="90%" height="75%" src="{{lesson.video}}"
+         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="border rounded-2xl"></iframe>
     </div>
-    <div>
-        <h3>Modules</h3>
-        <div class="bg-white rounded-xl shadow mt-8">
-            <h2 class="text-xl font-semibold px-6 pt-6">Course Content</h2>
-            <div id="accordion-collapse" data-accordion="collapse">
-                {% for module in course.module.all %}
+    <div class="py-3 mr-12">
+        <h2 class=" mb-1 text-start my-1 text-gray-600" style="letter-spacing: -1px;font-size: 25px;font-family: 'sk-modernist',sans-serif;">Modules</h2>
 
-                <h3>
-                    <button class="flex justify-between w-full px-6 py-4 border-b hover:bg-blue-200"
-                        data-accordion-target="#module-{{ module.id }}">
-                        <span class="font-medium">{{ module }}</span>
-                    </button>
-                </h3>
+    <ul class="w-lg mt-4 mx-auto divide-y divide-gray-200  shadow shadow-gray-300 rounded-xl">
+    {% for i in course.module.all  %}
+    
+    <li>
+        <details class="group">
+            <summary class="flex items-center gap-3 px-4 py-3 font-medium marker:content-none hover:cursor-pointer">
+                <svg class="w-5 h-5 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
+                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
+                    </path>
+                </svg>
+                <span style="font-family: 'sk-modernist',sans-serif;" class="text-gray-600">{{i}}</span>
+            </summary>
 
-                <div id="module-{{ module.id }}" class="hidden">
-                    <div class="px-4 py-2 space-y-2">
-
-                        {% for l in module.lesson.all %}
-                        <a href="{% url 'lesson' course.id %}?module={{ module.id }}&lesson={{ l.id }}" class="block px-4 py-2 rounded hover:bg-cyan-100
-           {% if lesson.id == l.id %} bg-cyan-200 font-semibold {% endif %}">
-
-                            ▶ {{ l.title }}
-
-                        </a>
-                        {% endfor %}
-
-                    </div>
-                </div>
-
+            <article class="px-4 pb-4">
+                {% for j in i.lesson.all %}
+                <p><a href="{% url 'viewlesson' course.id %}?module={{ module.id }}&lesson={{ lesson.id }}" style="font-family: 'sk-modernist',sans-serif;" class="text-gray-600">{{j}}</a></p>
+                
+                     
+                
                 {% endfor %}
-            </div>
-
-        </div>
+            </article>
+        </details>
+    </li>
+    {% endfor %}
+</ul>
+        
     </div>
 </div>
 
-
-{% endblock base %}
+{% endblock %}
