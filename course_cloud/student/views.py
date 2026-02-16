@@ -11,8 +11,8 @@ import razorpay
 # Create your views here.
 
 
-RAZR_KEY_ID=""
-RAZR_SECRET_KEY=""
+RAZR_KEY_ID="rzp_test_SFy9f2Wfo8Y5Jj"
+RAZR_SECRET_KEY="1mp2v9PT9unb14VrE2DPWscI"
 
 class StudentCreationView(CreateView):
     template_name="student_Registration.html"
@@ -99,7 +99,7 @@ class RemoveCartView(View):
         return redirect('Cart')
 
 class PlaceOrderView(View):
-   def get(self,request,**kwargs):
+    def get(self,request):
         qs=Cart.objects.filter(user_object=request.user)
         student=request.user
         cart_total=0
@@ -108,16 +108,42 @@ class PlaceOrderView(View):
         order=Order.objects.create(student=student,total=cart_total)
         for i in qs:
             order.course_object.add(i.course_object)
-            qs.delete()
-            if cart_total>0:
-                #authentication
-                client = razorpay.Client(auth=("RAZR_KEY_ID", "RAZR_SECRET_KEY"))
-                                
-                #payment order creation
-                data = { "amount": int(cart_total), "currency": "INR", "receipt": "order_rcptid_11" }
-                payment = client.order.create(data=data) 
-                print(payment,"******************")
-            return redirect('home')
+        qs.delete()
+        if cart_total>0:
+            client = razorpay.Client(auth=(RAZR_KEY_ID,RAZR_SECRET_KEY))
+            data = { "amount": int(cart_total*100), "currency": "INR", "receipt": "order_rcptid_11" }
+            payment = client.order.create(data=data)
+            print(payment,"++++++++++++")
+            order.razr_pay_order_id=payment.get('id')
+            order.save()
+            context={
+                "razr_key_id":RAZR_KEY_ID,
+                "amount":int(cart_total*100),
+                "display_amount":cart_total,
+                "razr_pay_id":payment.get('id')
+            }
+            print(cart_total)
+            return render(request,"payment.html",{"data":context})
+        return redirect('home')
+    
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+@method_decorator(csrf_exempt,name="dispatch")
+class PaymentVerifyView(View):
+
+    def post(self, request):
+        print(request.POST)   # check Razorpay response
+        client = razorpay.Client(auth=(RAZR_KEY_ID, RAZR_SECRET_KEY))
+        try:
+            client.utility.verify_payment_signature(request.POST):
+            razr_pay_order_id = request.POST.get('razorpay_order_id')
+            order_instance=Order.objects.get(razr_pay_order_id=razr_pay_order_id)
+            order_instance.is_paid=True
+            order_instance.save()
+        except:
+            print("failed")
+        return redirect('home')
+        
 class MyCoursesView(View):
    def get(self,request,**kwargs):
        qs=Order.objects.filter(student=request.user,is_paid=True)
